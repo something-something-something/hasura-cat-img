@@ -1,7 +1,9 @@
-version: '3.6'
+version: '3.9'
 services:
   postgres:
-    image: postgres:12
+    image: postgres:14
+    healthcheck:
+      test: ["CMD","psql","-d","postgres://postgres:postgrespassword@postgres:5432/postgres","-c","select 1;"]
     volumes:
     - db_data:/var/lib/postgresql/data
     environment:
@@ -14,7 +16,8 @@ services:
     ports:
     - "127.0.0.1:8080:8080"
     depends_on:
-    - "postgres"
+      postgres:
+        condition: service_healthy
     environment:
       ## postgres database to store Hasura metadata
       HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
