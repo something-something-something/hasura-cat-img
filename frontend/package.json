@@ -1,0 +1,23 @@
+{
+  "name": "hasura-app-frontend",
+  "version": "0.0.1",
+  "description": "a test app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "author": "eric krebs",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@apollo/client": "^3.5.10",
+    "graphql": "^16.3.0",
+    "graphql-ws": "^5.7.0",
+    "next": "^12.1.5",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}

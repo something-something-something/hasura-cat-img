@@ -1,0 +1,1 @@
+alter table appuser add column password text not null default ''
