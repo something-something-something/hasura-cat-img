@@ -14,7 +14,7 @@ services:
       - ./hasura/migrations:/hasura-migrations:rw
       - ./hasura/metadata:/hasura-metadata:rw
     ports:
-    - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -32,5 +32,11 @@ services:
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
       #maindb url
       MAINDB_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+  graphqurl:
+    image: node:17
+    user: node
+    command: ["npx","--yes","graphqurl@1.0.1","http://127.0.0.1:8080/v1/graphql","-i","-p","3005","-a","0.0.0.0"]
+    ports:
+      - "127.0.0.1:3005:3005"
 volumes:
   db_data:
