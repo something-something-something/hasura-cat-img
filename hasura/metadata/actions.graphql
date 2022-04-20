@@ -1,0 +1,15 @@
+
+input RegisterUserInput{
+	email: String!
+	password: String!
+}
+
+type Mutation{
+	registerUser(userinfo: RegisterUserInput): RegisterUserOutput
+}
+
+type RegisterUserOutput{
+	success: Boolean!
+	id: Int!
+	
+}

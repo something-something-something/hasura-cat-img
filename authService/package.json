@@ -1,0 +1,17 @@
+{
+  "name": "useractions",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --experimental-fetch index.js"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.17.3",
+    "jose": "^4.6.1",
+    "libsodium-wrappers": "^0.7.10"
+  }
+}

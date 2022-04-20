@@ -1,6 +1,20 @@
-actions: []
+actions: 
+  - name: registerUser
+    definition:
+      kind: synchronous
+      handler: "{{AUTH_ACTIONS_BASE_URL}}/register"
 custom_types:
-    enums: []
-    input_objects: []
-    objects: []
-    scalars: []
+  enums: []
+  input_objects: 
+    - name: RegisterUserInput
+  objects: 
+    - name: RegisterUserOutput
+      relationships:
+        - name: newUser
+          type: object
+          remote_table:
+            schema: public
+            name: appuser
+          field_mapping:
+            id: id
+  scalars: []

@@ -4,6 +4,10 @@ services:
     image: postgres:14
     healthcheck:
       test: ["CMD","psql","-d","postgres://postgres:postgrespassword@postgres:5432/postgres","-c","select 1;"]
+      interval: 5s
+      timeout: 5s
+      retries: 100
+      start_period: 5s
     volumes:
     - db_data:/var/lib/postgresql/data
     environment:
@@ -29,13 +33,18 @@ services:
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       ## uncomment next line to set an admin secret
-      # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+      HASURA_GRAPHQL_ADMIN_SECRET: passwordSecret
       #maindb url
       MAINDB_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      AUTH_ACTIONS_BASE_URL: http://authService:3020
+      HASURA_GRAPHQL_JWT_SECRET: |
+        {
+          "jwk_url":"http://authService:3020/jwk"
+        }
   graphqurl:
     image: node:17
     user: node
-    command: ["npx","--yes","graphqurl@1.0.1","http://127.0.0.1:8080/v1/graphql","-i","-p","3005","-a","0.0.0.0"]
+    command: ["npx","--yes","graphqurl@1.0.1","http://127.0.0.1:8080/v1/graphql","-i","-p","3005","-a","0.0.0.0","--header", " X-Hasura-Admin-Secret: passwordSecret"]
     ports:
       - "127.0.0.1:3005:3005"
   frontend:
@@ -47,5 +56,16 @@ services:
     ports:
       - "127.0.0.1:3000:3000" 
     command: ["sh","-c","npm install && npm run-script dev"]
+  authService:
+    image: node:17
+    user: node
+    working_dir: /home/node/app
+    environment:
+      GRAPHQL_ENDPOINT: http://graphql-engine:8080/v1/graphql
+    volumes:
+      - ./authService:/home/node/app
+    ports:
+      - "127.0.0.1:3020:3020" 
+    command: ["sh","-c","npm install && npm run-script start"]
 volumes:
   db_data:
