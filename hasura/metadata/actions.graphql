@@ -13,3 +13,17 @@ type RegisterUserOutput{
 	id: Int!
 	
 }
+
+input LoginUserInput{
+	email: String!
+	password: String!
+}
+
+type Mutation{
+	loginUser(userinfo: LoginUserInput): LoginUserOutput
+}
+
+type LoginUserOutput{
+	success: Boolean!
+	authKey: String!
+}

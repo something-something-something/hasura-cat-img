@@ -1,0 +1,4 @@
+- role_name: user
+  role_set:
+    - noauth
+    - defaultloggedin

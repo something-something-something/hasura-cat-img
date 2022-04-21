@@ -3,10 +3,19 @@ actions:
     definition:
       kind: synchronous
       handler: "{{AUTH_ACTIONS_BASE_URL}}/register"
+    permissions:
+      - role: noauth
+  - name: loginUser
+    definition:
+      kind: synchronous
+      handler: "{{AUTH_ACTIONS_BASE_URL}}/login"
+    permissions:
+      - role: noauth
 custom_types:
   enums: []
   input_objects: 
     - name: RegisterUserInput
+    - name: LoginUserInput
   objects: 
     - name: RegisterUserOutput
       relationships:
@@ -17,4 +26,5 @@ custom_types:
             name: appuser
           field_mapping:
             id: id
+    - name: LoginUserOutput
   scalars: []
