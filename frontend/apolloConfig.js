@@ -1,7 +1,27 @@
-import { ApolloClient ,InMemoryCache} from "@apollo/client";
+import { ApolloClient ,InMemoryCache,createHttpLink,from} from "@apollo/client";
+import {setContext} from '@apollo/client/link/context';
+const httpLink=createHttpLink({
+	uri:process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+});
+
+const authLink=setContext((req,prevContext)=>{
+	if(prevContext?.headers?.authorization===undefined&&sessionStorage.getItem('catImgAuthToken')!==null){
+		
+		return {
+			...prevContext,
+			headers:{
+				...prevContext.headers,
+				authorization:'Bearer '+sessionStorage.getItem('catImgAuthToken')
+			}
+		}
+	}
+	else{
+		return prevContext;
+	}
+})
 
 export const graphqlclient=new ApolloClient({
-	uri:process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+	link:from([authLink,httpLink]),
 	cache:new InMemoryCache(),
 	defaultOptions:{
 		query:{
@@ -11,5 +31,13 @@ export const graphqlclient=new ApolloClient({
 		mutate:{
 			fetchPolicy:'network-only'
 		},
-	}
-})
+	},
+	
+});
+
+
+
+
+// headers: {
+// 	sessionStorage.getItem('token')
+// },

@@ -1,20 +1,54 @@
 const express = require('express');
 const { subtle } = require('crypto').webcrypto;
 const jose = require('jose');
-const _sodium = require('libsodium-wrappers');
+const nodemailer=require('nodemailer');
+//import url from 'url';
+
+
+// const _sodium = require('libsodium-wrappers');
 
 
 const serverport = 3020;
 const graphqlEndpoint = process.env.GRAPHQL_ENDPOINT;
+const smtpHost= process.env.SMTP_HOST;
+const smtpPort=process.env.SMTP_PORT;
+const smtpUser=process.env.SMTP_USER;
+const smtpPassword=process.env.SMTP_PASS;
+const fromEmail=process.env.FROM_EMAIL_ADDRESS;
+const frontendUrl=process.env.FRONTEND_URL;
+//async function hashPassword(password) {
+//	await _sodium.ready;
+//
+//	return _sodium.crypto_pwhash_str(password, _sodium.crypto_pwhash_OPSLIMIT_MODERATE, _sodium.crypto_pwhash_MEMLIMIT_MODERATE);
+//}
+//async function verifyPassword(pass, hash) {
+//	await _sodium;
+//	return _sodium.crypto_pwhash_str_verify(hash, pass);
+//}
 
-async function hashPassword(password) {
-	await _sodium.ready;
+async function sendEmail(toEmail,subject,emailText){
+	const transporter=nodemailer.createTransport({
+		host:smtpHost,
+		port:smtpPort,
+		//auth does not mater right now
+		auth:{
+			user:smtpUser,
+			pass:smtpPassword,
+		}
+	});
 
-	return _sodium.crypto_pwhash_str(password, _sodium.crypto_pwhash_OPSLIMIT_MODERATE, _sodium.crypto_pwhash_MEMLIMIT_MODERATE);
-}
-async function verifyPassword(pass, hash) {
-	await _sodium;
-	return _sodium.crypto_pwhash_str_verify(hash, pass);
+	try{
+		transporter.sendMail({
+			to:toEmail,
+			from:fromEmail,
+			subject:subject,
+			text:emailText
+		})
+	}
+	catch(e){
+		return false;
+	}
+	return true;
 }
 
 async function genKeys() {
@@ -44,12 +78,23 @@ async function genUserJWT(id, privateKey) {
 	}).setProtectedHeader({ alg: 'RS512' }).sign(privateKey);
 }
 
+//token for login from email link
+async function genMailJWT(id, privateKey) {
+	return await new jose.SignJWT({
+		"https://hasura.io/jwt/claims": {
+			"x-hasura-allowed-roles": ["mailauthlink"],
+			"x-hasura-default-role": "mailauthlink",
+			"x-hasura-user-id-to-auth": '' + id
+		}
+	}).setProtectedHeader({ alg: 'RS512' }).sign(privateKey);
+}
+
 async function runServer(port) {
 
 	let { publicKey, privateKey } = await genKeys();
 	const app = express();
 
-	let errorMessage = { error: { "message": "An error Occured" } }
+	let errorMessage = { "message": "An error Occured" } 
 
 	app.use(express.json());
 
@@ -57,7 +102,7 @@ async function runServer(port) {
 
 		const data = req.body;
 		console.log(req.body);;
-		if (typeof req.body?.input?.userinfo?.password === 'string' && typeof req.body?.input?.userinfo?.email === 'string') {
+		if (typeof req.body?.input?.userinfo?.email === 'string') {
 			try {
 				let apiRes = await fetch(graphqlEndpoint, {
 					method: 'POST',
@@ -67,8 +112,8 @@ async function runServer(port) {
 					body: JSON.stringify({
 
 						query: `
-					mutation addUser($useremail:String!,$userpass:String!){
-						insert_appuser_one(object:{email:$useremail,password:$userpass}){
+					mutation addUser($useremail:String!){
+						insert_appuser_one(object:{email:$useremail}){
 							
 								id
 							
@@ -78,8 +123,7 @@ async function runServer(port) {
 
 					`,
 						variables: {
-							useremail: req.body.input.userinfo.email,
-							userpass: await hashPassword(req.body.input.userinfo.password)
+							useremail: req.body.input.userinfo.email
 						}
 					})
 				});
@@ -108,10 +152,6 @@ async function runServer(port) {
 				console.log(e);
 				res.send(errorMessage)
 			}
-
-
-
-
 		}
 		else {
 			res.send(errorMessage)
@@ -121,7 +161,7 @@ async function runServer(port) {
 
 
 	app.post('/login', async (req, res) => {
-		if (typeof req.body?.input?.userinfo?.password === 'string' && typeof req.body?.input?.userinfo?.email === 'string') {
+		if (typeof req.body?.input?.userinfo?.email === 'string') {
 
 			try {
 				let apiRes = await fetch(graphqlEndpoint, {
@@ -130,38 +170,47 @@ async function runServer(port) {
 						Authorization: 'Bearer ' + await genSystemJWT(privateKey)
 					},
 					body: JSON.stringify({
-						query:`
+						query: `
 							query getusers($useremail:String!){
 								appuser(where: {email:{_eq:$useremail}}){
 									id
 									email
-									password
 								}
 							}
 						`,
-						variables:{
-							useremail:req.body.input.userinfo.email
+						variables: {
+							useremail: req.body.input.userinfo.email
 						}
 					})
 				});
-				let apiObj=await apiRes.json();
+				let apiObj = await apiRes.json();
 				console.log(apiObj);
-				//TODO: USE SAME ERROR FOR WRONG PASS AND EMAIL NOT FOUND
-				if(typeof apiObj?.data?.appuser?.[0]?.password==='string'&&typeof apiObj?.data?.appuser?.[0]?.id==='number'){
-					if(await verifyPassword(req.body.input.userinfo.password,apiObj.data.appuser[0].password)){
-						res.send({
-							success:true,
-							authKey:await genUserJWT(apiObj.data.appuser[0].id,privateKey)
-						})
-					}
-					else{
-						res.status(401);
-						res.send({message:'password wrong'});
-					}
+				//TODO Dont inform if email exists or not
+				if (typeof apiObj?.data?.appuser?.[0]?.id === 'number' && typeof apiObj?.data?.appuser?.[0]?.email === 'string') {
+					//send email
+					let authKey= await genMailJWT(apiObj.data.appuser[0].id, privateKey)
+
+
+					let loginUrl=new URL(`${frontendUrl}/authLink`)
+					loginUrl.search=`authToken=${authKey}`;
+					console.log(loginUrl.href)
+					sendEmail(apiObj?.data?.appuser?.[0]?.email ,'Go to Url To Login',`
+Login here:
+
+${loginUrl.href}
+					
+					
+					
+					`)
+
+					res.send({
+						success: true,
+
+					});
 				}
-				else{
+				else {
 					res.status(401);
-					res.send({message:'no user found'});
+					res.send({ message: 'no user found' });
 				}
 			}
 			catch (e) {
@@ -169,11 +218,63 @@ async function runServer(port) {
 				res.send(errorMessage)
 			}
 		}
-		else{
+		else {
 			res.send(errorMessage);
 		}
 	});
 
+
+	app.post('/authEmailToken', async (req, res) => {
+		try {
+			const checkForValidReq = req.body?.session_variables?.["x-hasura-role"] === 'mailauthlink' && !Number.isNaN(parseInt(req.body?.session_variables?.["x-hasura-user-id-to-auth"], 10));
+			if (checkForValidReq) {
+				let uid=parseInt(req.body?.session_variables?.["x-hasura-user-id-to-auth"], 10);
+				//check user still exists.
+				let gqlRes = await fetch(graphqlEndpoint, {
+					method: 'POST',
+					headers: {
+						Authorization: 'Bearer ' + await genSystemJWT(privateKey)
+					},
+					body: JSON.stringify({
+						query: `
+					query getusers($userid:Int!){
+						appuser_by_pk(id:$userid){
+							id
+							email
+						}
+					}
+					`,
+						variables: {
+							userid: uid,
+						}
+					})
+				});
+				let grqldata=await gqlRes.json();
+
+				if(grqldata?.data?.appuser_by_pk?.id===uid){
+					res.send({
+						success:true,
+						authKey:await genUserJWT(uid,privateKey),
+						id:grqldata?.data?.appuser_by_pk?.id
+					})
+				}
+				else{
+					res.status(401);
+					res.send(errorMessage);
+				}
+			}
+			else{
+				res.status(401);
+				res.send(errorMessage);
+			}
+		}
+		catch (e) {
+			res.status(401);
+			res.send(errorMessage);
+		}
+	})
+
+	//TODO: Secure this endpoint
 	app.get('/getmachinejwt', async (req, res) => {
 		res.send(await genSystemJWT(privateKey));
 	})

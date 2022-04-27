@@ -11,6 +11,12 @@ actions:
       handler: "{{AUTH_ACTIONS_BASE_URL}}/login"
     permissions:
       - role: noauth
+  - name: authEmailToken
+    definition:
+      kind: synchronous
+      handler: "{{AUTH_ACTIONS_BASE_URL}}/authEmailToken"
+    permissions:
+      - role: mailauthlink
 custom_types:
   enums: []
   input_objects: 
@@ -27,4 +33,13 @@ custom_types:
           field_mapping:
             id: id
     - name: LoginUserOutput
+    - name: MailAuthLinkOutput
+      relationships:
+        - name: userLoggedIn
+          type: object
+          remote_table:
+            schema: public
+            name: appuser
+          field_mapping:
+            id: id
   scalars: []

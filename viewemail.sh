@@ -1,0 +1,1 @@
+docker compose exec -u test mailserver mail

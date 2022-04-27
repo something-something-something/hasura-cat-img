@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 export default function CreateAcountPage() {
 	const CREATE_ACCOUNT = gql`
 		mutation registeruser($email:String!){
-			registerUser(userinfo:{email:$email,password:"pass"}){
+			registerUser(userinfo:{email:$email}){
 				id
 				success
 			}
