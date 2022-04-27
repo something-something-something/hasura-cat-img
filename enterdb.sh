@@ -1,0 +1,1 @@
+ docker compose exec postgres psql -d postgres://postgres:postgrespassword@postgres:5432/postgres

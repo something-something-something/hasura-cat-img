@@ -10,4 +10,9 @@
         retries: 1
   tables: 
     - "!include default/tables/appuser.yaml"
+    - "!include default/tables/profile.yaml"
+    - "!include default/tables/profilepost.yaml"
+    - "!include default/tables/profilecomment.yaml"
+    - "!include default/tables/profilepostcomment.yaml"
+    - "!include default/tables/watchprofile.yaml"
   functions: [ ]

@@ -1,0 +1,10 @@
+table:
+  name: watchprofile
+  schema: public
+object_relationships:
+  - name: profile
+    using:
+      foreign_key_constraint_on: profileid
+  - name: appuser
+    using:
+      foreign_key_constraint_on: appuserid

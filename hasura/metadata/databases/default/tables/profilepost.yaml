@@ -1,0 +1,15 @@
+table:
+  name: profilepost
+  schema: public
+object_relationships:
+  - name: profile
+    using:
+      foreign_key_constraint_on: profileid
+array_relationships:
+  - name: profilepostcomments
+    using:
+      foreign_key_constraint_on:
+        column: profilepostid
+        table:
+          schema: public
+          name: profilepostcomment

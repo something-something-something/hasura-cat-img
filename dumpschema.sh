@@ -1,0 +1,1 @@
+ docker compose exec postgres pg_dump postgres://postgres:postgrespassword@postgres:5432/postgres --schema-only > schema.sql

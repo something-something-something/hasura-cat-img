@@ -1,0 +1,43 @@
+table:
+  name: profile
+  schema: public
+object_relationships:
+  - name: owner
+    using:
+      foreign_key_constraint_on: appuserid
+array_relationships:
+  - name: profilecomments
+    using:
+      foreign_key_constraint_on:
+        column: profileid
+        table:
+          schema: public
+          name: profilecomment
+  - name: authoredprofilecomments
+    using:
+      foreign_key_constraint_on:
+        column: authorid
+        table:
+          schema: public
+          name: profilecomment
+  - name: profileposts
+    using:
+      foreign_key_constraint_on:
+        column: profileid
+        table:
+          schema: public
+          name: profilepost
+  - name: authoredprofilepostcomments
+    using:
+      foreign_key_constraint_on:
+        column: authorid
+        table:
+          schema: public
+          name: profilepostcomment
+  - name: userswatchering
+    using:
+      foreign_key_constraint_on:
+        column: profileid
+        table:
+          schema: public
+          name: watchprofile

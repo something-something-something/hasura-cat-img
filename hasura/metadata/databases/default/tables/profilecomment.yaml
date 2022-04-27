@@ -1,0 +1,10 @@
+table:
+  name: profilecomment
+  schema: public
+object_relationships:
+  - name: profile
+    using:
+      foreign_key_constraint_on: profileid
+  - name: author
+    using:
+      foreign_key_constraint_on: authorid
