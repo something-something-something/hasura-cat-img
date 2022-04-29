@@ -13,3 +13,36 @@ array_relationships:
         table:
           schema: public
           name: profilepostcomment
+select_permissions:
+  - role: noauth
+    permission:
+      columns:
+        - id
+        - profileid
+        - image
+        - description
+        - name
+        - created
+        - modified
+      filter: {}
+update_permissions:
+  - role: defaultloggedin
+    permission:
+      columns:
+        - description
+        - name
+      filter:
+        profile:
+          appuserid:
+            _eq: X-Hasura-User-ID
+      check:
+        profile: 
+          appuserid:
+            _eq: XHasura-User-ID
+delete_permissions:
+  - role: defaultloggedin
+    permission:
+      filter:
+        profile:
+          appuserid:
+            _eq: X-Hasura-User-ID

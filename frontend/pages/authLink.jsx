@@ -39,7 +39,7 @@ export default function AuthUser(props){
 
 		{(client)=>{
 			logInUser(data.authEmailToken.authKey,client);
-			router.push('/profile');
+			router.push('/userinfo');
 				return <>Directing you to profile</>
 			}
 		}

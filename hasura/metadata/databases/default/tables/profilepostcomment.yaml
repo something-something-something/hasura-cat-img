@@ -8,3 +8,45 @@ object_relationships:
   - name: author
     using:
       foreign_key_constraint_on: authorid
+select_permissions:
+  - role: noauth
+    permission:
+      columns:
+        - id
+        - profilepostid
+        - authorid
+        - comment
+        - created
+        - modified
+      filter: {}
+insert_permissions:
+  - role: defaultloggedin
+    permission:
+      columns:
+        - profilepostid
+        - authorid
+        - comment
+      check:
+        author:
+          appuserid:
+            _eq: X-Hasura-User-ID
+update_permissions:
+  - role: defaultloggedin
+    permission:
+      columns:
+        - comment
+      check:
+        author:
+          appuserid:
+            _eq: X-Hasura-User-ID    
+      filter:
+        author:
+          appuserid:
+            _eq: X-Hasura-User-ID
+delete_permissions:
+  - role: defaultloggedin
+    permission:
+      filter:
+        author:
+          appuserid:
+            _eq: X-Hasura-User-ID

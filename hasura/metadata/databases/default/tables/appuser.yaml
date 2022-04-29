@@ -17,14 +17,10 @@ array_relationships:
           schema: public
           name: watchprofile
 select_permissions:
-  - role: noauth
-    permission: 
-      columns:
-        - id
-      filter: {}
   - role: defaultloggedin
     permission:
       columns:
+        - id
         - email
       filter: 
         id: 

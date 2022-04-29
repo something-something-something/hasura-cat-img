@@ -41,3 +41,46 @@ array_relationships:
         table:
           schema: public
           name: watchprofile
+select_permissions:
+  - role: noauth
+    permission:
+      columns:
+        - id
+        - name
+        - description
+      filter: {}
+  - role: defaultloggedin
+    permission: 
+      columns:
+        - appuserid
+      filter:
+        id:
+          _eq: X-Hasura-User-ID
+insert_permissions:
+  - role: defaultloggedin
+    permission: 
+      columns: 
+        - appuserid
+        - description
+        - name
+      check:
+        appuserid:
+          _eq: X-Hasura-User-ID
+update_permissions:
+  - role: defaultloggedin
+    permission: 
+      columns: 
+        - description
+        - name
+      filter:
+        appuserid:
+          _eq: X-Hasura-User-ID
+      check:
+        appuserid:
+          _eq: X-Hasura-User-ID
+delete_permissions:
+  - role: defaultloggedin
+    permission: 
+      filter:
+        appuserid:
+          _eq: X-Hasura-User-ID

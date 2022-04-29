@@ -23,6 +23,7 @@ export const Button=styled('button',{
 	},
 	'&:hover':{
 		backgroundColor:'$bgSolidHover',
+		cursor:'pointer'
 		
 		
 	},
@@ -109,7 +110,25 @@ export const Label=styled(LabelPrimative.Root,{
 	borderStyle:'solid',
 	borderColor:'$border',
 	borderWidth:'0 0 0 0.5rem',
+	variants:{
+		kind:{
+			fullwidth:{
+				width:'stretch',
+				textAlign:'center',
+				borderWidth:'0 0 0.5rem 0',
+			}
+		}
+	},
 });
+
+export function InputWithLabel({labelText,labelProps,inputProps,inputID,inflex=true}){
+	let inputLabel=(<><Label htmlFor={inputID} {...labelProps}>{labelText}</Label><Input id={inputID} {...inputProps} /></>)
+	return (<>{inflex?
+		<div style={{display:'flex'}}> 
+		{inputLabel}
+		</div>:inputLabel
+	}</>);
+}
 
 
 const formLoadingAnimation=keyframes({
@@ -153,7 +172,23 @@ export const Form=styled('form',{
 	}
 });
 
-
+export const A =styled('a',{	
+	//all:'unset',
+	color:'$textLowInfo',
+	fontSize:'1rem',
+	textShadow:'0rem 0rem -1rem $colors$textLowInfo,0rem 0rem -1rem $colors$textLowInfo,0rem 0rem -1rem $colors$textLowInfo,0rem 0rem -1rem $colors$textLowInfo',
+	transition: 'color 1s,text-shadow 1s',
+	
+	'&:hover':{
+	
+		color:'$textLow',
+		
+		textShadow:'1rem 0rem 0.5em $colors$textLowInfo,0rem 1rem 0.5rem $colors$textLowInfo,-1rem 0rem 0.5rem $colors$textLowInfo,0rem -1rem 0.5em $colors$textLowInfo',
+		
+		
+	},
+	
+});
 
 
 

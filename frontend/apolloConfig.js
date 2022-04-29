@@ -1,17 +1,19 @@
 import { ApolloClient ,InMemoryCache,createHttpLink,from} from "@apollo/client";
 import {setContext} from '@apollo/client/link/context';
+import {TokenStorageKey} from './util/auth';
+
 const httpLink=createHttpLink({
 	uri:process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
 });
 
 const authLink=setContext((req,prevContext)=>{
-	if(prevContext?.headers?.authorization===undefined&&sessionStorage.getItem('catImgAuthToken')!==null){
+	if(prevContext?.headers?.authorization===undefined&&sessionStorage.getItem(TokenStorageKey)!==null){
 		
 		return {
 			...prevContext,
 			headers:{
 				...prevContext.headers,
-				authorization:'Bearer '+sessionStorage.getItem('catImgAuthToken')
+				authorization:'Bearer '+sessionStorage.getItem(TokenStorageKey)
 			}
 		}
 	}
