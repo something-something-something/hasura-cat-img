@@ -6,17 +6,17 @@ import { ProfileForm } from '../components/profile/profile';
 import { useRouter } from 'next/router';
 import { ClientSide, RequireAuth } from '../components/util';
 
-export default function ProfilePage() {
+export default function UserInfoPage() {
 
 	return (
 		<ClientSide>
 			<RequireAuth>
-				<ProfilePageContent />
+				<UserInfoPageContent />
 			</RequireAuth>
 		</ClientSide>
 	);
 }
-function ProfilePageContent() {
+function UserInfoPageContent() {
 	const router = useRouter();
 	const [showCreateProfileInput, setShowProfileCreateInput] = useState(false);
 	const [createProfileName, setCreateProfileName] = useState('');

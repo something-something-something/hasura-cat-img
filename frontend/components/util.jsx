@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { isAuthenticated } from "../util/auth";
-
-
+import Link from "next/link";
+import { Button } from "./base";
 
 export function useIsServer(){
 	const [isServer,setIsServer]=useState(true);
@@ -33,4 +33,15 @@ export function RequireAuth(props){
 	return <></>;
 
 	
+}
+
+export function ContentNeedsLogin(props){
+
+	if(isAuthenticated()){
+		return <>{props.children}</>
+	}
+	else{
+		return <><Link href="/login"><Button as="a">Please Login</Button></Link></>;
+	}
+
 }

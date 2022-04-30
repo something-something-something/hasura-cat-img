@@ -4,9 +4,11 @@ import { A, Button } from '../components/base';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { logOutUser } from '../util/auth'
+import { ClientSide } from '../components/util';
 export default function SiteApp({ Component, pageProps }) {
 	const router=useRouter();
 	return <>
+	
 		<ApolloProvider client={graphqlclient}>
 			<div style={{ display: 'flex',justifyContent:'center' }}><Link href="/" passHref={true}><Button as="a">Home</Button></Link>
 				<Link href="/login" passHref={true}><Button as="a">Login</Button></Link>
@@ -26,5 +28,6 @@ export default function SiteApp({ Component, pageProps }) {
 
 			<div style={{margin:'1rem auto' ,maxWidth:'80rem'}}><Component {...pageProps} /></div>
 		</ApolloProvider>
+		
 	</>
 }

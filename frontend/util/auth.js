@@ -1,5 +1,5 @@
 import * as jose from 'jose';
-
+import {  gql } from "@apollo/client";
 export const TokenStorageKey='catImgAuthToken';
 
 export function logInUser(token,client){
@@ -26,5 +26,24 @@ export function getUserIdFromJWT(){
 
 //todo check token is token and valid right now just check it exists
 export function isAuthenticated(){
-	return sessionStorage.getItem(TokenStorageKey)!==null;
+	
+	return typeof sessionStorage!=='undefined'&& sessionStorage.getItem(TokenStorageKey)!==null ;
+}
+
+
+export async function getUserDetails(client){
+	return (await client.query(gql`
+	query getUserData($uid:Int!){
+		appuser_by_pk(id:$uid){
+			id
+			email
+			profiles{
+				name
+				id
+				description
+			}
+		}
+	}
+	
+	`)).data.appuser_by_pk;
 }

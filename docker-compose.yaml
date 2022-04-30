@@ -57,6 +57,7 @@ services:
       - ./frontend:/home/node/app
     environment:
       NEXT_PUBLIC_GRAPHQL_ENDPOINT: http://127.0.0.1:8080/v1/graphql
+      NEXT_PUBLIC_GRAPHQL_WEBSOCKET_ENDPOINT: ws://127.0.0.1:8080/v1/graphql
     ports:
       - "127.0.0.1:3000:3000" 
     command: ["sh","-c","npm ci && npm run-script dev"]
