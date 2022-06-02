@@ -17,11 +17,19 @@ actions:
       handler: "{{AUTH_ACTIONS_BASE_URL}}/authEmailToken"
     permissions:
       - role: mailauthlink
+  - name: postImage
+    definition: 
+      kind: synchronous
+      handler: "{{UPLOAD_IMAGE_BASE_URL}}/addpost"
+    permissions:
+      - role: defaultloggedin
 custom_types:
-  enums: []
+  enums:
+    - name: AcceptMimeTypesForPostImage
   input_objects: 
     - name: RegisterUserInput
     - name: LoginUserInput
+    - name: PostImageDataInput
   objects: 
     - name: RegisterUserOutput
       relationships:
@@ -42,4 +50,5 @@ custom_types:
             name: appuser
           field_mapping:
             id: id
+    - name: PostImageOutput
   scalars: []

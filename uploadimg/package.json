@@ -1,5 +1,5 @@
 {
-  "name": "useractions",
+  "name": "uploadimg",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -10,10 +10,8 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "express": "^4.17.3",
-    "jose": "^4.6.1",
-    "libsodium-wrappers": "^0.7.10",
-    "nodemailer": "^6.7.3",
+    "express": "^4.18.1",
+    "minio": "^7.0.28",
     "nodemon": "^2.0.16"
   }
 }

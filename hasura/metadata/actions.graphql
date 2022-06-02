@@ -37,3 +37,27 @@ type MailAuthLinkOutput{
 	authKey: String!
 	id: Int!
 }
+
+
+type Mutation{
+	postImage(postImageData:PostImageDataInput):PostImageOutput
+}
+
+input PostImageDataInput{
+	mimetype:AcceptMimeTypesForPostImage
+	name: String!
+	imageBase64: String!
+	profile: Int!
+	description: String!
+}
+
+enum AcceptMimeTypesForPostImage{
+	JPEG
+	PNG
+}
+
+type PostImageOutput{
+	success: Boolean!
+	uuid: String!
+	id: Int!
+}
